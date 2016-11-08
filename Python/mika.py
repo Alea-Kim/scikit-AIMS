@@ -1,0 +1,1 @@
+print "mika is cute"
