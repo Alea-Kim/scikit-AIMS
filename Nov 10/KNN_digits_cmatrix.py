@@ -3,6 +3,8 @@ from sklearn import neighbors #/
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
+from sklearn import svm, metrics #/
+
 
 print "Handwritten Digits\nwith K-Nearest Neighbor(k=1)"
 ##--- load USPS dataset ---
@@ -38,3 +40,7 @@ def plot_confusion_matrix(cm,
 cnf_matrix = confusion_matrix(test_label, y_pred)
 #np.set_printoptions(precision=2)
 plot_confusion_matrix(cnf_matrix)
+
+print("Classification report for classifier %s:\n%s\n"
+      % (knn, metrics.classification_report(test_label, y_pred)))
+print("Confusion matrix:\n%s" % metrics.confusion_matrix(test_label, y_pred))
