@@ -5,11 +5,30 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn import svm, metrics #/
 
+def plot_confusion_matrix(cm,
+                          normalize=False,
+                          title='Confusion matrix'):
+    print('Confusion matrix')
+    print(cm)
+
+def diagonal_sum(cnf, n):
+    SUM = 0
+    for i in range(0,n):
+        for j in range(0,n):
+            if i == j:
+                SUM = SUM + cnf[i,j]
+    return SUM
+
+def get_acc(total, add):
+    total = float(total)
+    add = float(add)
+    return add/total
 
 print "Handwritten Digits\nwith K-Nearest Neighbor(k=1)"
 ##--- load USPS dataset ---
 ##--- test samples and their labels ---
 X_test = np.loadtxt('test_data.txt')
+total_test = 2007
 # print X_test.shape
 X_test = X_test.astype(np.float32) # original data
 test_label = np.loadtxt('./USPS_jpg/test_label.txt')
@@ -25,22 +44,25 @@ X_trai /= 255.0
 X_test /= 255.0
 
 h = 0.02 #/ DEAFULT? :O step size in the mesh
+to_plot = []
+for i in range(1,3):
+    knn=neighbors.KNeighborsClassifier(n_neighbors=i) #/ K = 1 okay we made an instance that can do knn
+    y_pred = knn.fit(X_trai, trai_label).predict(X_test)
 
-knn=neighbors.KNeighborsClassifier(n_neighbors=1) #/ K = 1 okay we made an instance that can do knn
-y_pred = knn.fit(X_trai, trai_label).predict(X_test)
+    # Compute confusion matrix
+    cnf_matrix = confusion_matrix(test_label, y_pred)
+    #np.set_printoptions(precision=2)
+    #plot_confusion_matrix(cnf_matrix)
 
+    a = get_acc(total_test, diagonal_sum(cnf_matrix, 10))
+    to_plot.append(a)
 
-def plot_confusion_matrix(cm,
-                          normalize=False,
-                          title='Confusion matrix'):
-    print('Confusion matrix')
-    print(cm)
+print to_plot
 
-# Compute confusion matrix
-cnf_matrix = confusion_matrix(test_label, y_pred)
-#np.set_printoptions(precision=2)
-plot_confusion_matrix(cnf_matrix)
+plt.plot([1,2], to_plot)
+plt.axis([1,4,0,4])
+plt.show()
 
-print("Classification report for classifier %s:\n%s\n"
-      % (knn, metrics.classification_report(test_label, y_pred)))
-print("Confusion matrix:\n%s" % metrics.confusion_matrix(test_label, y_pred))
+#    print("Classification report for classifier %s:\n%s\n"
+#          % (knn, metrics.classification_report(test_label, y_pred)))
+#    print("Confusion matrix:\n%s" % metrics.confusion_matrix(test_label, y_pred))
